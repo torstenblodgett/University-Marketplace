@@ -32,6 +32,8 @@ export interface Database {
           display_name: string
           avatar_url: string | null
           bio: string | null
+          program: string | null
+          year: string | null
           is_admin: boolean
           created_at: string
         }
@@ -41,6 +43,8 @@ export interface Database {
           display_name: string
           avatar_url?: string | null
           bio?: string | null
+          program?: string | null
+          year?: string | null
           is_admin?: boolean
           created_at?: string
         }
@@ -50,6 +54,8 @@ export interface Database {
           display_name?: string
           avatar_url?: string | null
           bio?: string | null
+          program?: string | null
+          year?: string | null
           is_admin?: boolean
           created_at?: string
         }

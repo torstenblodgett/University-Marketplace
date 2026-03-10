@@ -26,27 +26,27 @@ export default async function MessagesPage() {
     .order('last_message_at', { ascending: false, nullsFirst: false })
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Messages</h1>
+    <div className="mx-auto max-w-2xl px-4 py-8">
+      <h1 className="text-xl font-bold text-[#1A1A1A] mb-4">Messages</h1>
 
       {!conversations || conversations.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 py-20 text-center space-y-3">
+        <div className="rounded-lg border border-dashed border-gray-200 py-16 text-center space-y-2">
           <p className="text-3xl">💬</p>
-          <p className="font-medium text-gray-700">No messages yet</p>
+          <p className="font-medium text-[#1A1A1A]">No messages yet</p>
           <p className="text-sm text-gray-500">
             When you message a seller or get a message, it will appear here.
           </p>
           <div className="pt-2">
             <Link
               href="/search"
-              className="inline-flex rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white hover:bg-red-800 transition-colors"
+              className="inline-flex rounded-lg bg-[#ED1B2F] px-4 py-2 text-sm font-medium text-white hover:bg-[#C41525] transition-colors"
             >
               Browse listings
             </Link>
           </div>
         </div>
       ) : (
-        <div className="divide-y divide-gray-100 rounded-2xl border border-gray-200 bg-white overflow-hidden">
+        <div className="divide-y divide-[#E5E5E5] rounded-lg border border-[#E5E5E5] bg-white overflow-hidden">
           {conversations.map(conv => {
             const isbuyer = conv.buyer_id === user.id
             const otherParty = isbuyer

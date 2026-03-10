@@ -210,15 +210,15 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
 
       {/* Type selector */}
       <fieldset className="space-y-2">
-        <legend className="text-sm font-medium text-gray-700">What are you posting?</legend>
+        <legend className="text-sm font-medium text-[#1A1A1A]">What are you posting?</legend>
         <div className="grid grid-cols-2 gap-3">
           {(['good', 'service'] as const).map(type => (
             <label
               key={type}
               className={[
-                'flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 p-4 text-sm font-medium transition-colors',
+                'flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 p-3.5 text-sm font-medium transition-colors',
                 listingType === type
-                  ? 'border-red-700 bg-red-50 text-red-700'
+                  ? 'border-[#ED1B2F] bg-red-50 text-[#ED1B2F]'
                   : 'border-gray-200 text-gray-600 hover:border-gray-300',
               ].join(' ')}
             >
@@ -241,15 +241,15 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
 
       {/* Category */}
       <div className="space-y-1">
-        <label htmlFor="category" className="text-sm font-medium text-gray-700">Category</label>
+        <label htmlFor="category" className="text-sm font-medium text-[#1A1A1A]">Category</label>
         <select
           id="category"
           name="category"
           defaultValue={listing?.category ?? ''}
           className={[
-            'w-full rounded-lg border px-3 py-2 text-sm text-gray-900',
-            'focus:outline-none focus:ring-2 focus:ring-red-700 focus:border-transparent',
-            fieldErrors.category ? 'border-red-500' : 'border-gray-300',
+            'w-full rounded-lg border px-3 py-2 text-sm text-[#1A1A1A]',
+            'focus:outline-none focus:ring-1 focus:ring-[#ED1B2F] focus:border-[#ED1B2F]',
+            fieldErrors.category ? 'border-red-500' : 'border-gray-200',
           ].join(' ')}
         >
           <option value="">Choose a category</option>
@@ -283,7 +283,7 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
 
       {/* Price */}
       <div className="space-y-1">
-        <label htmlFor="price" className="text-sm font-medium text-gray-700">
+        <label htmlFor="price" className="text-sm font-medium text-[#1A1A1A]">
           {listingType === 'good' ? 'Price (CAD)' : 'Rate (CAD/hr or flat)'}
         </label>
         <div className="relative">
@@ -297,14 +297,14 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
             placeholder="Leave blank for free / negotiable"
             defaultValue={listing?.price ?? ''}
             className={[
-              'w-full rounded-lg border pl-7 pr-3 py-2 text-sm text-gray-900',
-              'focus:outline-none focus:ring-2 focus:ring-red-700 focus:border-transparent',
-              fieldErrors.price ? 'border-red-500' : 'border-gray-300',
+              'w-full rounded-lg border pl-7 pr-3 py-2 text-sm text-[#1A1A1A]',
+              'focus:outline-none focus:ring-1 focus:ring-[#ED1B2F] focus:border-[#ED1B2F]',
+              fieldErrors.price ? 'border-red-500' : 'border-gray-200',
             ].join(' ')}
           />
         </div>
         {fieldErrors.price && <p className="text-xs text-red-600">{fieldErrors.price}</p>}
-        <p className="text-xs text-gray-500">Leave empty to show as "Free" or "Negotiable"</p>
+        <p className="text-xs text-gray-500">Leave empty to show as &quot;Free&quot; or &quot;Negotiable&quot;</p>
       </div>
 
       {/* Location */}
@@ -326,7 +326,7 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
               onClick={() => {
                 if (locationRef.current) locationRef.current.value = loc
               }}
-              className="rounded-full border border-gray-200 px-3 py-1 text-xs text-gray-600 hover:border-red-200 hover:bg-red-50 hover:text-red-700 transition-colors"
+              className="rounded-full border border-gray-200 px-3 py-1 text-xs text-gray-600 hover:border-[#ED1B2F] hover:text-[#ED1B2F] transition-colors"
             >
               {loc}
             </button>
@@ -356,7 +356,7 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
 
       {/* Photos */}
       <div className="space-y-3">
-        <p className="text-sm font-medium text-gray-700">
+        <p className="text-sm font-medium text-[#1A1A1A]">
           Photos <span className="text-gray-400 font-normal">(optional · up to {MAX_IMAGES})</span>
         </p>
 
@@ -394,7 +394,7 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
 
         {/* File picker */}
         {canAddMore && (
-          <label className="flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-gray-300 px-4 py-3 text-sm text-gray-500 hover:border-red-300 hover:text-red-600 transition-colors">
+          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-gray-200 px-4 py-3 text-sm text-gray-500 hover:border-[#ED1B2F] hover:text-[#ED1B2F] transition-colors">
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"

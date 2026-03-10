@@ -27,7 +27,7 @@ export async function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
+      <nav className="sticky top-0 z-50 border-b border-[#E5E5E5] bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
@@ -94,7 +94,7 @@ export async function Navbar() {
       </nav>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur-sm md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-[#E5E5E5] bg-white md:hidden">
         <div className="flex">
           <Link href="/" className="flex flex-1 flex-col items-center gap-0.5 py-2.5 text-gray-500 hover:text-red-700 transition-colors">
             <span className="text-base leading-none">⊞</span>

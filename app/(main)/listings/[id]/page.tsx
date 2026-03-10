@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { MessageSellerButton } from '@/components/listings/MessageSellerButton'
 import { ReviewForm } from '@/components/reviews/ReviewForm'
@@ -36,9 +35,9 @@ export default async function ListingPage({ params }: Props) {
   const isVerified = !!user?.email_confirmed_at
   const isService = listing.listing_type === 'service'
 
-  const sellerProfile = listing.profiles as { id: string; display_name: string } | null
+  const sellerProfile = listing.profiles as { id: string; display_name: string; created_at: string } | null
 
-  // Check if current user has had a conversation about this listing (trust gate for reviews)
+  // Trust gate for reviews
   let hasConversation = false
   let existingReview = null
 
@@ -64,7 +63,7 @@ export default async function ListingPage({ params }: Props) {
     }
   }
 
-  // Fetch seller's aggregate rating for display
+  // Seller's aggregate rating
   const { data: sellerReviews } = await supabase
     .from('reviews')
     .select('rating')
@@ -74,134 +73,197 @@ export default async function ListingPage({ params }: Props) {
     ? sellerReviews.reduce((sum, r) => sum + r.rating, 0) / sellerReviews.length
     : null
 
+  // Seller's completed transaction count
+  const { count: transactionCount } = await supabase
+    .from('listings')
+    .select('id', { count: 'exact', head: true })
+    .eq('seller_id', listing.seller_id)
+    .in('status', ['sold', 'closed'])
+
   const priceLabel = listing.price != null
     ? `$${Number(listing.price).toFixed(2)}${isService ? '/hr' : ''}`
     : isService ? 'Rate negotiable' : 'Free'
 
+  const memberSince = sellerProfile?.created_at
+    ? new Date(sellerProfile.created_at).getFullYear()
+    : null
+
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10 space-y-8">
+    <div className="mx-auto max-w-5xl px-4 py-6">
+
+      {/* Breadcrumb */}
+      <div className="mb-4 flex items-center gap-2 text-xs text-gray-400">
+        <Link href="/" className="hover:text-gray-600">Home</Link>
+        <span>/</span>
+        <Link href={`/search?category=${listing.category}`} className="hover:text-gray-600">
+          {CATEGORY_LABELS[listing.category] ?? listing.category}
+        </Link>
+        <span>/</span>
+        <span className="text-gray-600 truncate max-w-[200px]">{listing.title}</span>
+      </div>
+
+      {/* Main grid: Left = images, Right = details */}
       <div className="grid md:grid-cols-5 gap-8">
 
-        {/* Main content */}
-        <div className="md:col-span-3 space-y-6">
-          {/* Images */}
+        {/* LEFT: Image gallery */}
+        <div className="md:col-span-3">
           {listing.images.length > 0 ? (
-            <div className={listing.images.length === 1 ? '' : 'grid grid-cols-2 gap-2'}>
-              {listing.images.map((url, i) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={i}
-                  src={url}
-                  alt={`${listing.title} — photo ${i + 1}`}
-                  className={[
-                    'w-full rounded-2xl object-cover border border-gray-200',
-                    listing.images.length === 1 ? 'aspect-video' : 'aspect-square',
-                  ].join(' ')}
-                />
-              ))}
+            <div className="space-y-2">
+              {/* Primary image */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={listing.images[0]}
+                alt={listing.title}
+                className="w-full rounded-lg object-cover border border-[#E5E5E5] aspect-[4/3]"
+              />
+              {/* Additional images */}
+              {listing.images.length > 1 && (
+                <div className="grid grid-cols-4 gap-2">
+                  {listing.images.slice(1).map((url, i) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      key={i}
+                      src={url}
+                      alt={`${listing.title} — photo ${i + 2}`}
+                      className="aspect-square w-full rounded object-cover border border-[#E5E5E5]"
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           ) : (
-            <div className="aspect-video rounded-2xl bg-gray-100 flex items-center justify-center text-6xl border border-gray-200">
+            <div className="aspect-[4/3] rounded-lg bg-gray-100 border border-[#E5E5E5] flex items-center justify-center text-5xl text-gray-300">
               {isService ? '🤝' : '🛍️'}
             </div>
           )}
 
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="category">{CATEGORY_LABELS[listing.category] ?? listing.category}</Badge>
-              {isService && <Badge variant="neutral">Service</Badge>}
-            </div>
+          {/* Description — below images on desktop */}
+          <div className="mt-6 hidden md:block">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Description</h2>
+            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{listing.description}</p>
 
-            <h1 className="text-2xl font-bold text-gray-900">{listing.title}</h1>
-
-            <p className="text-2xl font-bold text-gray-900">{priceLabel}</p>
-
-            {listing.location && (
-              <p className="text-sm text-gray-500 flex items-center gap-1.5">
-                <span>📍</span> {listing.location}
-              </p>
-            )}
-
-            <div className="prose prose-sm max-w-none">
-              <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                {listing.description}
-              </p>
+            <div className="mt-4 flex flex-wrap gap-3 text-xs text-gray-400">
+              <span>Category: {CATEGORY_LABELS[listing.category] ?? listing.category}</span>
+              <span>·</span>
+              <span>Posted {new Date(listing.created_at).toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+              {isService && <><span>·</span><span>Service</span></>}
             </div>
           </div>
         </div>
 
-        {/* Sidebar */}
-        <div className="md:col-span-2 space-y-4">
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 space-y-4 sticky top-24">
+        {/* RIGHT: Title, price, seller, action */}
+        <div className="md:col-span-2">
+          <div className="sticky top-20 space-y-4">
 
-            {/* Seller info */}
-            <Link href={`/profile/${listing.seller_id}`} className="flex items-center gap-3 group">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-700 font-semibold">
-                {sellerProfile?.display_name?.[0]?.toUpperCase() ?? '?'}
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-900 group-hover:text-red-700 transition-colors">
-                  {sellerProfile?.display_name ?? 'McGill Student'}
+            {/* Title + Price */}
+            <div>
+              <h1 className="text-xl font-bold text-[#1A1A1A] leading-snug">{listing.title}</h1>
+              <p className="mt-2 text-2xl font-bold text-[#1A1A1A]">{priceLabel}</p>
+              {listing.location && (
+                <p className="mt-1 text-sm text-gray-500 flex items-center gap-1">
+                  <span>📍</span> {listing.location}
                 </p>
-                <div className="flex items-center gap-2">
-                  <Badge variant="verified">✓ McGill Verified</Badge>
+              )}
+            </div>
+
+            <hr className="border-[#E5E5E5]" />
+
+            {/* Seller trust card */}
+            <div className="rounded-lg border border-[#E5E5E5] bg-white p-4 space-y-3">
+              <Link
+                href={`/profile/${listing.seller_id}`}
+                className="flex items-center gap-3 group"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-700 font-bold text-sm">
+                  {sellerProfile?.display_name?.[0]?.toUpperCase() ?? '?'}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-[#1A1A1A] group-hover:text-[#ED1B2F] transition-colors">
+                    {sellerProfile?.display_name ?? 'McGill Student'}
+                  </p>
                   {avgRating !== null && (
-                    <span className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 mt-0.5">
                       <StarRating rating={avgRating} size="sm" />
                       <span className="text-xs text-gray-500">{avgRating.toFixed(1)}</span>
-                    </span>
+                    </div>
                   )}
                 </div>
-              </div>
-            </Link>
+              </Link>
 
-            <hr className="border-gray-100" />
+              <div className="space-y-1 text-xs text-gray-600">
+                <p className="flex items-center gap-1.5">
+                  <span className="text-green-600 font-medium">✔</span>
+                  Verified McGill Email
+                </p>
+                {memberSince && (
+                  <p className="flex items-center gap-1.5">
+                    <span className="text-gray-400">·</span>
+                    Member since {memberSince}
+                  </p>
+                )}
+                {typeof transactionCount === 'number' && transactionCount > 0 && (
+                  <p className="flex items-center gap-1.5">
+                    <span className="text-gray-400">·</span>
+                    {transactionCount} completed {transactionCount === 1 ? 'transaction' : 'transactions'}
+                  </p>
+                )}
+              </div>
+            </div>
 
-            {/* Actions */}
-            {isOwner ? (
-              <div className="space-y-2">
-                <Link href={`/listings/${listing.id}/edit`} className="block">
-                  <Button variant="secondary" className="w-full">Edit listing</Button>
-                </Link>
-                <p className="text-xs text-center text-gray-400">This is your listing</p>
-              </div>
-            ) : isVerified ? (
-              <div className="space-y-2">
-                <MessageSellerButton listingId={listing.id} sellerId={listing.seller_id} />
-                <Link href={`/report?listing=${listing.id}`} className="block">
-                  <Button variant="ghost" size="sm" className="w-full text-gray-400">
-                    Report listing
-                  </Button>
-                </Link>
-              </div>
-            ) : user ? (
-              <div className="space-y-3 text-center">
-                <p className="text-sm text-gray-600">Verify your McGill email to message sellers.</p>
-                <Link href="/verify-email">
-                  <Button variant="secondary" className="w-full">Verify email</Button>
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-3 text-center">
-                <p className="text-sm text-gray-600">Sign in to message this seller.</p>
-                <Link href={`/login?next=/listings/${listing.id}`}>
-                  <Button className="w-full">Sign in to message</Button>
-                </Link>
-              </div>
-            )}
+            {/* Action */}
+            <div>
+              {isOwner ? (
+                <div className="space-y-2">
+                  <Link href={`/listings/${listing.id}/edit`} className="block">
+                    <Button variant="secondary" className="w-full">Edit listing</Button>
+                  </Link>
+                  <p className="text-xs text-center text-gray-400">This is your listing</p>
+                </div>
+              ) : isVerified ? (
+                <div className="space-y-2">
+                  <MessageSellerButton listingId={listing.id} sellerId={listing.seller_id} />
+                  <Link href={`/report?listing=${listing.id}`} className="block">
+                    <Button variant="ghost" size="sm" className="w-full text-gray-400">
+                      Report listing
+                    </Button>
+                  </Link>
+                </div>
+              ) : user ? (
+                <div className="space-y-2 text-center">
+                  <p className="text-sm text-gray-600">Verify your McGill email to message sellers.</p>
+                  <Link href="/verify-email">
+                    <Button variant="secondary" className="w-full">Verify email</Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-2 text-center">
+                  <p className="text-sm text-gray-600">Sign in to message this seller.</p>
+                  <Link href={`/login?next=/listings/${listing.id}`}>
+                    <Button className="w-full">Sign in to message</Button>
+                  </Link>
+                </div>
+              )}
+            </div>
 
-            {/* Trust note */}
-            <p className="text-xs text-gray-400 text-center">
-              All users are verified McGill students.
-            </p>
           </div>
         </div>
       </div>
 
-      {/* Review section — only shown after confirmed contact */}
+      {/* Description on mobile (below the grid) */}
+      <div className="mt-6 md:hidden">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Description</h2>
+        <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{listing.description}</p>
+        <div className="mt-4 flex flex-wrap gap-3 text-xs text-gray-400">
+          <span>Category: {CATEGORY_LABELS[listing.category] ?? listing.category}</span>
+          <span>·</span>
+          <span>Posted {new Date(listing.created_at).toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+        </div>
+      </div>
+
+      {/* Review section */}
       {hasConversation && sellerProfile && (
-        <div className="border-t border-gray-100 pt-8 max-w-lg">
-          <h2 className="text-base font-semibold text-gray-900 mb-4">Leave a review</h2>
+        <div className="mt-10 border-t border-[#E5E5E5] pt-8 max-w-lg">
+          <h2 className="text-base font-semibold text-[#1A1A1A] mb-4">Leave a review</h2>
           <ReviewForm
             listingId={listing.id}
             sellerId={listing.seller_id}
@@ -210,6 +272,7 @@ export default async function ListingPage({ params }: Props) {
           />
         </div>
       )}
+
     </div>
   )
 }

@@ -28,7 +28,7 @@ export function ReviewForm({ listingId, sellerId, sellerName, existingReview }: 
   if (done || existingReview) {
     const displayReview = done ? { rating, content } : existingReview!
     return (
-      <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-2">
+      <div className="rounded-lg border border-[#E5E5E5] bg-gray-50 p-4 space-y-2">
         <div className="flex items-center gap-2">
           <StarRating rating={displayReview.rating} size="sm" />
           <span className="text-xs text-gray-500">Your review</span>
@@ -72,7 +72,7 @@ export function ReviewForm({ listingId, sellerId, sellerName, existingReview }: 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <p className="text-sm font-medium text-gray-900">
+      <p className="text-sm font-medium text-[#1A1A1A]">
         Rate your experience with {sellerName}
       </p>
 
@@ -84,7 +84,7 @@ export function ReviewForm({ listingId, sellerId, sellerName, existingReview }: 
         rows={3}
         maxLength={500}
         placeholder="Share details about your experience (optional)"
-        className="w-full resize-none rounded-xl border border-gray-300 px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-700 focus:border-transparent"
+        className="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#ED1B2F] focus:border-[#ED1B2F]"
       />
 
       {error && <p className="text-xs text-red-600">{error}</p>}

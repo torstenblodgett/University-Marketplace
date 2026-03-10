@@ -13,7 +13,7 @@ export default async function NewListingPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       <div className="mb-8 space-y-1">
-        <h1 className="text-2xl font-bold text-gray-900">Post a listing</h1>
+        <h1 className="text-xl font-bold text-[#1A1A1A]">Post a listing</h1>
         <p className="text-sm text-gray-500">List a good or offer a service to McGill students.</p>
       </div>
       <ListingForm mode="create" sellerId={user.id} />

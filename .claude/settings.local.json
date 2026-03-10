@@ -24,7 +24,11 @@
       "Bash(find \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/listings\" -type f)",
       "Bash(find \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/messages\" -type f)",
       "Bash(find \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/search\" -type f)",
-      "Bash(ls -R \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/\")"
+      "Bash(ls -R \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/\")",
+      "Bash(npx next lint)",
+      "Bash(npm run lint)",
+      "Bash(npm run build)",
+      "Bash(git add -A)"
     ]
   }
 }

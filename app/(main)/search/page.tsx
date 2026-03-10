@@ -46,18 +46,14 @@ export default async function SearchPage({ searchParams }: Props) {
   const hasFilters = !!(q || category || type || min || max || sort)
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">
-        {q ? `Results for "${q}"` : 'Browse listings'}
-      </h1>
-
+    <div className="mx-auto max-w-6xl px-4 py-6 space-y-4">
       <SearchFilters q={q} category={category} type={type} min={min} max={max} sort={sort} />
 
       {/* Results */}
       {!listings || listings.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 py-20 text-center space-y-3">
+        <div className="rounded-lg border border-dashed border-gray-200 py-16 text-center space-y-2">
           <p className="text-3xl">🔍</p>
-          <p className="font-medium text-gray-700">No listings found</p>
+          <p className="font-medium text-[#1A1A1A]">No listings found</p>
           <p className="text-sm text-gray-500">
             {hasFilters
               ? 'Try adjusting your filters or search terms.'
@@ -67,14 +63,14 @@ export default async function SearchPage({ searchParams }: Props) {
             {hasFilters && (
               <Link
                 href="/search"
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
               >
                 Clear filters
               </Link>
             )}
             <Link
               href="/listings/new"
-              className="rounded-lg bg-red-700 px-4 py-2 text-sm font-medium text-white hover:bg-red-800 transition-colors"
+              className="rounded-lg bg-[#ED1B2F] px-4 py-2 text-sm font-medium text-white hover:bg-[#C41525] transition-colors"
             >
               Post a listing
             </Link>
@@ -82,10 +78,10 @@ export default async function SearchPage({ searchParams }: Props) {
         </div>
       ) : (
         <>
-          <p className="text-sm text-gray-500">
-            {listings.length} listing{listings.length !== 1 ? 's' : ''} found
+          <p className="text-xs text-gray-400 uppercase tracking-wide font-medium">
+            {q ? `${listings.length} result${listings.length !== 1 ? 's' : ''} for "${q}"` : `${listings.length} listing${listings.length !== 1 ? 's' : ''}`}
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
             {listings.map(listing => (
               <ListingCard
                 key={listing.id}

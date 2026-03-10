@@ -65,12 +65,12 @@ export default async function ConversationPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
       {/* Header */}
-      <div className="mb-6 flex items-center gap-4 border-b border-gray-200 pb-4">
+      <div className="mb-6 flex items-center gap-4 border-b border-[#E5E5E5] pb-4">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-700 font-semibold text-sm">
           {otherParty?.display_name?.[0]?.toUpperCase() ?? '?'}
         </div>
         <div>
-          <p className="font-semibold text-gray-900">{otherParty?.display_name ?? 'McGill Student'}</p>
+          <p className="font-semibold text-[#1A1A1A]">{otherParty?.display_name ?? 'McGill Student'}</p>
           {listing && (
             <p className="text-xs text-gray-500">Re: {listing.title}</p>
           )}

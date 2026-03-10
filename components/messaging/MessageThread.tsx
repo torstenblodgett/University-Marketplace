@@ -136,7 +136,7 @@ export function MessageThread({ conversationId, currentUserId, initialMessages }
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSend} className="border-t border-gray-200 pt-4 space-y-2">
+      <form onSubmit={handleSend} className="border-t border-[#E5E5E5] pt-4 space-y-2">
         {error && <p className="text-xs text-red-600">{error}</p>}
         <div className="flex gap-2">
           <textarea
@@ -152,7 +152,7 @@ export function MessageThread({ conversationId, currentUserId, initialMessages }
             rows={2}
             maxLength={MAX_MESSAGE_LENGTH}
             disabled={sending}
-            className="flex-1 resize-none rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-700 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+            className="flex-1 resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#ED1B2F] focus:border-[#ED1B2F] disabled:bg-gray-50 disabled:text-gray-500"
           />
           <Button type="submit" loading={sending} disabled={!content.trim()}>
             Send

@@ -7,21 +7,34 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 
+const YEAR_OPTIONS = ['U1', 'U2', 'U3', 'U4+', 'Graduate', 'PhD', 'Other']
+
 interface Props {
   userId: string
   initialDisplayName: string
   initialBio: string | null
+  initialProgram: string | null
+  initialYear: string | null
 }
 
-export function ProfileEditForm({ userId, initialDisplayName, initialBio }: Props) {
+export function ProfileEditForm({
+  userId,
+  initialDisplayName,
+  initialBio,
+  initialProgram,
+  initialYear,
+}: Props) {
   const router = useRouter()
   const [displayName, setDisplayName] = useState(initialDisplayName)
   const [bio, setBio] = useState(initialBio ?? '')
+  const [program, setProgram] = useState(initialProgram ?? '')
+  const [year, setYear] = useState(initialYear ?? '')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
   const displayNameTrimmed = displayName.trim()
   const bioTrimmed = bio.trim()
+  const programTrimmed = program.trim()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -39,6 +52,10 @@ export function ProfileEditForm({ userId, initialDisplayName, initialBio }: Prop
       setError('Bio must be 300 characters or fewer.')
       return
     }
+    if (programTrimmed.length > 100) {
+      setError('Program must be 100 characters or fewer.')
+      return
+    }
 
     setSaving(true)
     try {
@@ -48,6 +65,8 @@ export function ProfileEditForm({ userId, initialDisplayName, initialBio }: Prop
         .update({
           display_name: displayNameTrimmed,
           bio: bioTrimmed || null,
+          program: programTrimmed || null,
+          year: year || null,
         })
         .eq('id', userId)
 
@@ -74,6 +93,30 @@ export function ProfileEditForm({ userId, initialDisplayName, initialBio }: Prop
         maxLength={50}
         required
       />
+
+      <div className="grid grid-cols-2 gap-4">
+        <Input
+          label="Program"
+          value={program}
+          onChange={e => setProgram(e.target.value)}
+          placeholder="e.g. Computer Science"
+          maxLength={100}
+        />
+
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-[#1A1A1A]">Year</label>
+          <select
+            value={year}
+            onChange={e => setYear(e.target.value)}
+            className="w-full rounded-md border border-[#E5E5E5] bg-white px-3 py-2 text-sm text-[#1A1A1A] focus:border-[#ED1B2F] focus:outline-none focus:ring-1 focus:ring-[#ED1B2F]"
+          >
+            <option value="">Select year</option>
+            {YEAR_OPTIONS.map(opt => (
+              <option key={opt} value={opt}>{opt}</option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       <div className="space-y-1">
         <Textarea

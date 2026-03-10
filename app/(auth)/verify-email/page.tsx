@@ -48,7 +48,7 @@ export default function VerifyEmailPage() {
         </p>
       </div>
 
-      <div className="rounded-xl bg-amber-50 border border-amber-100 px-4 py-4 text-sm text-amber-800 space-y-1">
+      <div className="rounded-lg bg-amber-50 border border-amber-100 px-4 py-4 text-sm text-amber-800 space-y-1">
         <p className="font-medium">Didn&apos;t receive it?</p>
         <p className="text-amber-700">Check your spam folder, or resend the email below.</p>
       </div>
