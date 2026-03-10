@@ -20,7 +20,7 @@ export function ListingCard({ listing }: ListingCardProps) {
     >
       {/* 4:3 image */}
       <div className="aspect-[4/3] overflow-hidden bg-gray-100">
-        {listing.images[0] ? (
+        {listing.images?.[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={listing.images[0]}
