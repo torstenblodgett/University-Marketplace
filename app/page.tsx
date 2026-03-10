@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/Button'
@@ -23,6 +24,11 @@ export default async function HomePage() {
 
   try {
     const supabase = await createClient()
+
+    // Signed-in users go straight to the browse/search experience
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) redirect('/search')
+
     const { data } = await supabase
       .from('listings')
       .select('*, profiles(display_name)')
