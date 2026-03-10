@@ -29,15 +29,21 @@ const FEATURED: Array<{
   slugs: Category[]
   searchSlug: string
 }> = [
-  { label: 'Textbooks',   icon: '📚', slugs: ['textbooks'],                                                           searchSlug: 'textbooks'   },
-  { label: 'Furniture',   icon: '🛋️', slugs: ['furniture'],                                                           searchSlug: 'furniture'   },
-  { label: 'Electronics', icon: '💻', slugs: ['electronics'],                                                          searchSlug: 'electronics' },
-  { label: 'Winter Gear', icon: '🧤', slugs: ['winter_gear'],                                                          searchSlug: 'winter_gear' },
-  { label: 'Services',    icon: '🤝', slugs: ['tutoring', 'moving', 'cleaning', 'snow_shovelling', 'other_services'],  searchSlug: 'tutoring'    },
+  { label: 'Textbooks',     icon: '📚', slugs: ['textbooks'],                      searchSlug: 'textbooks'      },
+  { label: 'Furniture',     icon: '🛋️', slugs: ['furniture'],                      searchSlug: 'furniture'      },
+  { label: 'Electronics',   icon: '💻', slugs: ['electronics'],                    searchSlug: 'electronics'    },
+  { label: 'Clothing',      icon: '🧥', slugs: ['clothing'],                       searchSlug: 'clothing'       },
+  { label: 'Winter Gear',   icon: '🧤', slugs: ['winter_gear'],                    searchSlug: 'winter_gear'    },
+  { label: 'Tutoring',      icon: '🎓', slugs: ['tutoring'],                       searchSlug: 'tutoring'       },
+  { label: 'Moving Help',   icon: '📦', slugs: ['moving'],                         searchSlug: 'moving'         },
+  { label: 'Cleaning',      icon: '🧹', slugs: ['cleaning'],                       searchSlug: 'cleaning'       },
+  { label: 'Snow Shovelling', icon: '❄️', slugs: ['snow_shovelling'],              searchSlug: 'snow_shovelling'},
+  { label: 'Other',         icon: '🛍️', slugs: ['other_goods', 'other_services'],  searchSlug: 'other_goods'    },
 ]
 
 export default async function HomePage() {
   const categoryListings: Record<string, Listing[]> = {}
+  let recentListings: Listing[] = []
   let hasAnyListings = false
 
   try {
@@ -47,21 +53,30 @@ export default async function HomePage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (user) redirect('/search')
 
-    // Fetch recent listings per featured category in parallel
-    const results = await Promise.all(
-      FEATURED.map(cat =>
+    // Fetch recent listings (all categories) and per-category listings in parallel
+    const [recentResult, ...categoryResults] = await Promise.all([
+      supabase
+        .from('listings')
+        .select('*, profiles(display_name)')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(4),
+      ...FEATURED.map(cat =>
         supabase
           .from('listings')
           .select('*, profiles(display_name)')
           .in('category', cat.slugs)
           .eq('status', 'active')
           .order('created_at', { ascending: false })
-          .limit(8)
-      )
-    )
+          .limit(4)
+      ),
+    ])
+
+    recentListings = (recentResult.data ?? []) as Listing[]
+    if (recentListings.length > 0) hasAnyListings = true
 
     FEATURED.forEach((cat, i) => {
-      const listings = (results[i].data ?? []) as Listing[]
+      const listings = (categoryResults[i].data ?? []) as Listing[]
       categoryListings[cat.label] = listings
       if (listings.length > 0) hasAnyListings = true
     })
@@ -114,9 +129,36 @@ export default async function HomePage() {
         ))}
       </div>
 
-      {/* Listings by category */}
+      {/* Listings */}
       {hasAnyListings ? (
         <div className="space-y-10 pb-10">
+
+          {/* Recent Listings */}
+          {recentListings.length > 0 && (
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-base font-semibold text-gray-900">
+                  🕐 Recent Listings
+                </h2>
+                <Link
+                  href="/browse"
+                  className="text-xs text-red-700 hover:underline font-medium"
+                >
+                  View all →
+                </Link>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {recentListings.map(listing => (
+                  <ListingCard
+                    key={listing.id}
+                    listing={listing as Parameters<typeof ListingCard>[0]['listing']}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Per-category sections */}
           {FEATURED.map(cat => {
             const listings = categoryListings[cat.label] ?? []
             if (listings.length === 0) return null
@@ -144,6 +186,7 @@ export default async function HomePage() {
               </section>
             )
           })}
+
         </div>
       ) : (
         <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 py-16 text-center space-y-3">
