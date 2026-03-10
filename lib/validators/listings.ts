@@ -7,10 +7,11 @@ export const CATEGORIES = [
   { value: 'clothing',       label: 'Clothing',       type: 'good' },
   { value: 'winter_gear',    label: 'Winter Gear',    type: 'good' },
   { value: 'other_goods',    label: 'Other Goods',    type: 'good' },
-  { value: 'tutoring',       label: 'Tutoring',       type: 'service' },
-  { value: 'moving',         label: 'Moving Help',    type: 'service' },
-  { value: 'cleaning',       label: 'Cleaning',       type: 'service' },
-  { value: 'other_services', label: 'Other Services', type: 'service' },
+  { value: 'tutoring',          label: 'Tutoring',          type: 'service' },
+  { value: 'moving',            label: 'Moving Help',        type: 'service' },
+  { value: 'cleaning',          label: 'Cleaning',           type: 'service' },
+  { value: 'snow_shovelling',   label: 'Snow Shovelling',    type: 'service' },
+  { value: 'other_services',    label: 'Other Services',     type: 'service' },
 ] as const
 
 export type CategoryValue = typeof CATEGORIES[number]['value']

@@ -10,10 +10,11 @@ const CATEGORIES = [
   { label: 'Clothing',     slug: 'clothing',      icon: '🧥' },
   { label: 'Winter Gear',  slug: 'winter_gear',   icon: '🧤' },
   { label: 'Tutoring',     slug: 'tutoring',      icon: '🎓' },
-  { label: 'Moving Help',  slug: 'moving',        icon: '📦' },
-  { label: 'Cleaning',     slug: 'cleaning',      icon: '🧹' },
-  { label: 'Other Goods',  slug: 'other_goods',   icon: '🛍️' },
-  { label: 'Services',     slug: 'other_services',icon: '🤝' },
+  { label: 'Moving Help',     slug: 'moving',          icon: '📦' },
+  { label: 'Cleaning',        slug: 'cleaning',        icon: '🧹' },
+  { label: 'Snow Shovelling', slug: 'snow_shovelling', icon: '❄️' },
+  { label: 'Other Goods',     slug: 'other_goods',     icon: '🛍️' },
+  { label: 'Services',        slug: 'other_services',  icon: '🤝' },
 ]
 
 export default async function HomePage() {
