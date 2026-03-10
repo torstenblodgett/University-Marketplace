@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { ListingCard } from '@/components/listings/ListingCard'
+import { HeroCollage } from '@/components/home/HeroCollage'
 
 const CATEGORIES = [
   { label: 'Textbooks',    slug: 'textbooks',     icon: '📚' },
@@ -38,28 +39,51 @@ export default async function HomePage() {
   return (
     <div>
 
-      {/* Announcement bar — only for logged-out visitors */}
-      {!user && (
-        <div className="border-b border-[#E5E5E5] bg-white px-4 py-3">
-          <div className="mx-auto max-w-6xl flex items-center justify-between gap-4">
-            <p className="text-sm text-gray-600">
-              <span className="font-medium text-[#1A1A1A]">McGill Marketplace</span>
-              {' '}— buy, sell, and find services. Verified McGill students only.
-            </p>
-            <div className="flex items-center gap-3 shrink-0">
-              <Link href="/login" className="text-sm text-gray-600 hover:text-[#1A1A1A]">
-                Log in
-              </Link>
+      {/* ── Hero ── */}
+      <div className="relative overflow-hidden border-b border-[#E5E5E5] bg-[#F7F7F7]">
+        {/* Background collage — purely decorative, 6 % opacity silhouettes */}
+        <HeroCollage />
+
+        {/* Hero content — sits above the collage via z-10 */}
+        <div className="relative z-10 mx-auto max-w-xl px-4 py-12 text-center sm:py-16">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-[#ED1B2F]">
+            McGill Marketplace
+          </p>
+          <h1 className="mb-3 text-2xl font-bold leading-snug text-[#1A1A1A] sm:text-3xl">
+            Buy, sell, and find services
+            <br className="hidden sm:block" />
+            {' '}with verified McGill students
+          </h1>
+          <p className="mx-auto mb-6 max-w-xs text-sm text-gray-500">
+            Textbooks, furniture, tutoring, and more —
+            <br className="hidden sm:block" />
+            {' '}exclusively for the McGill community.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="/search"
+              className="rounded-md bg-[#ED1B2F] px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-[#C41525]"
+            >
+              Browse listings
+            </Link>
+            {!user ? (
               <Link
                 href="/signup"
-                className="rounded-md bg-[#ED1B2F] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#C41525] transition-colors"
+                className="rounded-md border border-[#E5E5E5] bg-white px-5 py-2 text-sm font-medium text-[#1A1A1A] transition-colors hover:border-gray-400"
               >
                 Sign up free
               </Link>
-            </div>
+            ) : (
+              <Link
+                href="/listings/new"
+                className="rounded-md border border-[#E5E5E5] bg-white px-5 py-2 text-sm font-medium text-[#1A1A1A] transition-colors hover:border-gray-400"
+              >
+                Post a listing
+              </Link>
+            )}
           </div>
         </div>
-      )}
+      </div>
 
       {/* Category bar */}
       <div className="border-b border-[#E5E5E5] bg-white">
