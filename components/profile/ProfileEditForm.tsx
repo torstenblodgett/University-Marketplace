@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 
-const YEAR_OPTIONS = ['U1', 'U2', 'U3', 'U4+', 'Graduate', 'PhD', 'Other']
+const YEAR_OPTIONS = ['U0', 'U1', 'U2', 'U3', 'U4+', 'Graduate', 'PhD', 'Other']
 
 interface Props {
   userId: string
