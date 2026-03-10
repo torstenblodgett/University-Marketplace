@@ -5,7 +5,7 @@
  * watermark-style backdrop behind the hero section.
  *
  * Design rules:
- *  - All items render at 6 % opacity — barely visible, never competing with text
+ *  - All items render at 9 % opacity — subtly visible, never competing with text
  *  - Single flat colour (#1A1A1A) so shapes are inherently desaturated
  *  - pointer-events-none + aria-hidden so the layer is invisible to AT and clicks
  *  - 6 items on ≥sm viewports; only 2 corner items on mobile
@@ -142,7 +142,7 @@ export function HeroCollage() {
 
       {/* Textbook — top-left, always visible */}
       <div
-        className="absolute left-3 top-4 w-16 text-[#1A1A1A] opacity-[0.06] sm:w-20"
+        className="absolute left-3 top-4 w-16 text-[#1A1A1A] opacity-[0.09] sm:w-20"
         style={{ transform: 'rotate(-8deg)' }}
       >
         <TextbookSVG />
@@ -150,7 +150,7 @@ export function HeroCollage() {
 
       {/* Chair — top-right, always visible */}
       <div
-        className="absolute right-3 top-3 w-14 text-[#1A1A1A] opacity-[0.06] sm:w-24"
+        className="absolute right-3 top-3 w-14 text-[#1A1A1A] opacity-[0.09] sm:w-24"
         style={{ transform: 'rotate(7deg)' }}
       >
         <ChairSVG />
@@ -158,7 +158,7 @@ export function HeroCollage() {
 
       {/* Laptop — upper centre-left, desktop only */}
       <div
-        className="absolute left-[26%] top-8 hidden w-28 text-[#1A1A1A] opacity-[0.06] sm:block"
+        className="absolute left-[26%] top-8 hidden w-28 text-[#1A1A1A] opacity-[0.09] sm:block"
         style={{ transform: 'rotate(5deg)' }}
       >
         <LaptopSVG />
@@ -166,7 +166,7 @@ export function HeroCollage() {
 
       {/* Winter jacket — bottom-left, desktop only */}
       <div
-        className="absolute bottom-4 left-5 hidden w-24 text-[#1A1A1A] opacity-[0.06] sm:block"
+        className="absolute bottom-4 left-5 hidden w-24 text-[#1A1A1A] opacity-[0.09] sm:block"
         style={{ transform: 'rotate(-6deg)' }}
       >
         <WinterJacketSVG />
@@ -174,7 +174,7 @@ export function HeroCollage() {
 
       {/* Bike — bottom-right, desktop only */}
       <div
-        className="absolute bottom-3 right-4 hidden w-36 text-[#1A1A1A] opacity-[0.06] sm:block"
+        className="absolute bottom-3 right-4 hidden w-36 text-[#1A1A1A] opacity-[0.09] sm:block"
         style={{ transform: 'rotate(4deg)' }}
       >
         <BikeSVG />
@@ -182,7 +182,7 @@ export function HeroCollage() {
 
       {/* Desk lamp — lower centre-right, desktop only */}
       <div
-        className="absolute bottom-6 right-[24%] hidden w-20 text-[#1A1A1A] opacity-[0.06] sm:block"
+        className="absolute bottom-6 right-[24%] hidden w-20 text-[#1A1A1A] opacity-[0.09] sm:block"
         style={{ transform: 'rotate(-11deg)' }}
       >
         <DeskLampSVG />
