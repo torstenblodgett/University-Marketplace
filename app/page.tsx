@@ -56,7 +56,7 @@ export default async function HomePage() {
           </div>
 
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
-            The marketplace built<br />
+            The <span className="text-blue-600">marketplace</span> built<br />
             <span className="text-red-700">for McGill students</span>
           </h1>
 

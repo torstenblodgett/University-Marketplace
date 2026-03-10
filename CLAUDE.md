@@ -104,13 +104,20 @@ Do not make trust-dependent actions available to unverified users.
 ---
 ## Workflow instructions
 When working on a task, always follow this order unless told otherwise:
-1. Understand the request and the relevant part of the codebase
-2. Inspect existing files before editing
-3. Make a short plan
-4. Implement the smallest solid version
-5. Check for type errors, lint issues, and broken imports
-6. Review for edge cases
-7. Summarize what changed and any remaining issues
+1. Pull the latest changes from GitHub before making any edits: `git pull origin main`
+2. Understand the request and the relevant part of the codebase
+3. Inspect existing files before editing
+4. Make a short plan
+5. Implement the smallest solid version
+6. Check for type errors, lint issues, and broken imports
+7. Review for edge cases
+8. Summarize what changed and any remaining issues
+9. After completing edits, commit and push to GitHub so the partner can see the changes:
+   ```
+   git add .
+   git commit -m "<short description of change>"
+   git push origin main
+   ```
 Do not make large speculative changes without clear justification.
 ---
 ## Verification / double-checking rules
