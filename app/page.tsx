@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/Button'
 import { ListingCard } from '@/components/listings/ListingCard'
+import { HeroCollage } from '@/components/home/HeroCollage'
 
 const CATEGORIES = [
   { label: 'Textbooks',   slug: 'textbooks',      icon: '📚' },
@@ -36,34 +37,40 @@ export default async function HomePage() {
     <div className="mx-auto max-w-6xl px-4 py-10 space-y-14">
 
       {/* Hero */}
-      <section className="text-center space-y-5 pt-6">
-        <div className="inline-flex items-center gap-2 rounded-full bg-red-50 px-4 py-1.5 text-sm text-red-700 font-medium border border-red-100">
-          <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
-          McGill students only — verified &amp; trusted
+      <section className="relative text-center space-y-5 pt-6 pb-2 -mx-4 px-4 rounded-2xl overflow-hidden">
+        {/* Subtle background collage — decorative SVG silhouettes at 15% opacity */}
+        <HeroCollage />
+
+        {/* Hero content sits above the collage */}
+        <div className="relative z-10 space-y-5">
+          <div className="inline-flex items-center gap-2 rounded-full bg-red-50 px-4 py-1.5 text-sm text-red-700 font-medium border border-red-100">
+            <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+            McGill students only — verified &amp; trusted
+          </div>
+
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
+            The marketplace built<br />
+            <span className="text-red-700">for McGill students</span>
+          </h1>
+
+          <p className="text-lg text-gray-500 max-w-xl mx-auto leading-relaxed">
+            Buy and sell textbooks, furniture, and electronics. Find tutors and student services.
+            Every account is verified with a McGill email.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+            <Link href="/signup">
+              <Button size="lg">Get started free</Button>
+            </Link>
+            <Link href="/search">
+              <Button variant="secondary" size="lg">Browse listings</Button>
+            </Link>
+          </div>
+
+          <p className="text-xs text-gray-400">
+            Requires a @mail.mcgill.ca or @mcgill.ca email address
+          </p>
         </div>
-
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
-          The marketplace built<br />
-          <span className="text-red-700">for McGill students</span>
-        </h1>
-
-        <p className="text-lg text-gray-500 max-w-xl mx-auto leading-relaxed">
-          Buy and sell textbooks, furniture, and electronics. Find tutors and student services.
-          Every account is verified with a McGill email.
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-          <Link href="/signup">
-            <Button size="lg">Get started free</Button>
-          </Link>
-          <Link href="/search">
-            <Button variant="secondary" size="lg">Browse listings</Button>
-          </Link>
-        </div>
-
-        <p className="text-xs text-gray-400">
-          Requires a @mail.mcgill.ca or @mcgill.ca email address
-        </p>
       </section>
 
       {/* Trust bar */}
