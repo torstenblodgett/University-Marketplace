@@ -20,6 +20,7 @@ export type Category =
   | 'tutoring'
   | 'moving'
   | 'cleaning'
+  | 'snow_shovelling'
   | 'other_services'
 
 export interface Database {
