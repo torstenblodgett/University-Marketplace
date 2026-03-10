@@ -1,4 +1,5 @@
 import { redirect, notFound } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { MessageThread } from '@/components/messaging/MessageThread'
 
@@ -61,27 +62,65 @@ export default async function ConversationPage({ params }: Props) {
     : (conversation.buyer as { id: string; display_name: string } | null)
 
   const listing = conversation.listings as { id: string; title: string; status: string } | null
+  const initial = otherParty?.display_name?.[0]?.toUpperCase() ?? '?'
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6">
-      {/* Header */}
-      <div className="mb-6 flex items-center gap-4 border-b border-[#E5E5E5] pb-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-700 font-semibold text-sm">
-          {otherParty?.display_name?.[0]?.toUpperCase() ?? '?'}
+    /*
+     * Full-height column: desktop = 100dvh minus sticky navbar (57px)
+     *                     mobile  = 100dvh minus navbar (57px) minus bottom-nav (64px)
+     * max-w-2xl keeps it readable on wide screens.
+     */
+    <div
+      className="mx-auto flex max-w-2xl flex-col h-[calc(100dvh-121px)] md:h-[calc(100dvh-57px)]"
+    >
+      {/* ── Header ── */}
+      <div className="flex shrink-0 items-center gap-3 border-b border-[#E5E5E5] bg-white px-3 py-3">
+        {/* Back arrow */}
+        <Link
+          href="/messages"
+          className="flex h-8 w-8 -ml-1 shrink-0 items-center justify-center rounded-full text-[#1A1A1A] hover:bg-gray-100 transition-colors"
+          aria-label="Back to messages"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+            <path d="M19 12H5M12 5l-7 7 7 7" />
+          </svg>
+        </Link>
+
+        {/* Avatar */}
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-red-400 to-red-700 text-white font-semibold text-sm">
+          {initial}
         </div>
-        <div>
-          <p className="font-semibold text-[#1A1A1A]">{otherParty?.display_name ?? 'McGill Student'}</p>
+
+        {/* Name + listing */}
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-[#1A1A1A] text-sm leading-snug">
+            {otherParty?.display_name ?? 'McGill Student'}
+          </p>
           {listing && (
-            <p className="text-xs text-gray-500">Re: {listing.title}</p>
+            <p className="truncate text-xs text-gray-500">{listing.title}</p>
           )}
         </div>
+
+        {/* View listing link */}
+        {listing && (
+          <Link
+            href={`/listings/${listing.id}`}
+            className="shrink-0 rounded-md border border-[#E5E5E5] px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-gray-400 transition-colors"
+          >
+            View listing
+          </Link>
+        )}
       </div>
 
-      <MessageThread
-        conversationId={conversationId}
-        currentUserId={user.id}
-        initialMessages={messages ?? []}
-      />
+      {/* ── Thread — fills remaining height ── */}
+      <div className="flex-1 min-h-0">
+        <MessageThread
+          conversationId={conversationId}
+          currentUserId={user.id}
+          initialMessages={messages ?? []}
+          otherPartyInitial={initial}
+        />
+      </div>
     </div>
   )
 }

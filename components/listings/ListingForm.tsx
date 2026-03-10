@@ -28,6 +28,24 @@ const MAX_IMAGES = 5
 const MAX_FILE_BYTES = 5 * 1024 * 1024
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
+/* ── Camera icon (Heroicons outline) ── */
+function CameraIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+      <path d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+    </svg>
+  )
+}
+
 export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -208,7 +226,98 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
 
-      {/* Type selector */}
+      {/* ──────────────────────────────────────────────────────
+          1. PHOTOS — top and prominent (Facebook Marketplace style)
+         ────────────────────────────────────────────────────── */}
+      <div className="space-y-2">
+        <p className="text-sm font-medium text-[#1A1A1A]">
+          Photos{' '}
+          <span className="font-normal text-gray-400">(optional · up to {MAX_IMAGES})</span>
+        </p>
+
+        {/* 5-slot photo grid */}
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+
+          {/* Existing images (edit mode) */}
+          {existingImages.map((url, i) => (
+            <div
+              key={`exist-${i}`}
+              className="relative aspect-square overflow-hidden rounded-xl border border-gray-200 bg-gray-50"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={url} alt="" className="h-full w-full object-cover" />
+              {i === 0 && (
+                <span className="absolute inset-x-0 bottom-0 bg-black/50 py-0.5 text-center text-[10px] font-medium text-white">
+                  Cover
+                </span>
+              )}
+            </div>
+          ))}
+
+          {/* Pending preview images */}
+          {pendingPreviews.map((url, i) => {
+            const isCover = existingImages.length + i === 0
+            return (
+              <div
+                key={`pending-${i}`}
+                className="relative aspect-square overflow-hidden rounded-xl border border-gray-200"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={url} alt="" className="h-full w-full object-cover" />
+                {isCover && (
+                  <span className="absolute inset-x-0 bottom-0 bg-black/50 py-0.5 text-center text-[10px] font-medium text-white">
+                    Cover
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => removePending(i)}
+                  className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white text-xs hover:bg-black/80"
+                  aria-label="Remove image"
+                >
+                  ×
+                </button>
+              </div>
+            )
+          })}
+
+          {/* Add-more slot — camera icon */}
+          {canAddMore && (
+            <label className="group flex aspect-square cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 transition-colors hover:border-[#ED1B2F] hover:bg-red-50">
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                className="sr-only"
+                onChange={handleImageChange}
+                disabled={loading}
+              />
+              <CameraIcon className="h-6 w-6 text-gray-400 transition-colors group-hover:text-[#ED1B2F]" />
+              <span className="text-[11px] text-gray-400 transition-colors group-hover:text-[#ED1B2F]">
+                {totalImages === 0 ? 'Add photos' : 'Add more'}
+              </span>
+            </label>
+          )}
+
+          {/* Empty placeholder slots (visual fill) */}
+          {Array.from({
+            length: Math.max(0, MAX_IMAGES - totalImages - (canAddMore ? 1 : 0)),
+          }).map((_, i) => (
+            <div
+              key={`empty-${i}`}
+              className="aspect-square rounded-xl border border-dashed border-gray-200 bg-gray-50"
+            />
+          ))}
+        </div>
+
+        <p className="text-xs text-gray-400">
+          First photo is the cover · JPEG, PNG, or WebP · max 5 MB each
+        </p>
+      </div>
+
+      {/* ──────────────────────────────────────────────────────
+          2. TYPE SELECTOR
+         ────────────────────────────────────────────────────── */}
       <fieldset className="space-y-2">
         <legend className="text-sm font-medium text-[#1A1A1A]">What are you posting?</legend>
         <div className="grid grid-cols-2 gap-3">
@@ -239,7 +348,9 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
         )}
       </fieldset>
 
-      {/* Category */}
+      {/* ──────────────────────────────────────────────────────
+          3. CATEGORY
+         ────────────────────────────────────────────────────── */}
       <div className="space-y-1">
         <label htmlFor="category" className="text-sm font-medium text-[#1A1A1A]">Category</label>
         <select
@@ -260,6 +371,9 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
         {fieldErrors.category && <p className="text-xs text-red-600">{fieldErrors.category}</p>}
       </div>
 
+      {/* ──────────────────────────────────────────────────────
+          4. TITLE
+         ────────────────────────────────────────────────────── */}
       <Input
         label="Title"
         name="title"
@@ -270,18 +384,9 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
         required
       />
 
-      <Textarea
-        label="Description"
-        name="description"
-        placeholder={listingType === 'good'
-          ? 'Describe the item — condition, edition, what\'s included...'
-          : 'Describe your service — your experience, what you offer, your approach...'}
-        defaultValue={listing?.description}
-        error={fieldErrors.description}
-        required
-      />
-
-      {/* Price */}
+      {/* ──────────────────────────────────────────────────────
+          5. PRICE
+         ────────────────────────────────────────────────────── */}
       <div className="space-y-1">
         <label htmlFor="price" className="text-sm font-medium text-[#1A1A1A]">
           {listingType === 'good' ? 'Price (CAD)' : 'Rate (CAD/hr or flat)'}
@@ -307,7 +412,23 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
         <p className="text-xs text-gray-500">Leave empty to show as &quot;Free&quot; or &quot;Negotiable&quot;</p>
       </div>
 
-      {/* Location */}
+      {/* ──────────────────────────────────────────────────────
+          6. DESCRIPTION
+         ────────────────────────────────────────────────────── */}
+      <Textarea
+        label="Description"
+        name="description"
+        placeholder={listingType === 'good'
+          ? 'Describe the item — condition, edition, what\'s included...'
+          : 'Describe your service — your experience, what you offer, your approach...'}
+        defaultValue={listing?.description}
+        error={fieldErrors.description}
+        required
+      />
+
+      {/* ──────────────────────────────────────────────────────
+          7. LOCATION
+         ────────────────────────────────────────────────────── */}
       <div className="space-y-2">
         <Input
           ref={locationRef}
@@ -334,7 +455,9 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
         </div>
       </div>
 
-      {/* Service-only fields */}
+      {/* ──────────────────────────────────────────────────────
+          8. SERVICE-ONLY FIELDS
+         ────────────────────────────────────────────────────── */}
       {listingType === 'service' && (
         <>
           <Input
@@ -354,71 +477,14 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
         </>
       )}
 
-      {/* Photos */}
-      <div className="space-y-3">
-        <p className="text-sm font-medium text-[#1A1A1A]">
-          Photos <span className="text-gray-400 font-normal">(optional · up to {MAX_IMAGES})</span>
-        </p>
-
-        {/* Existing images (edit mode) */}
-        {existingImages.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {existingImages.map((url, i) => (
-              <div key={i} className="h-20 w-20 rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={url} alt="" className="h-full w-full object-cover" />
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Pending previews */}
-        {pendingPreviews.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {pendingPreviews.map((url, i) => (
-              <div key={i} className="relative h-20 w-20 rounded-lg overflow-hidden border border-gray-200">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={url} alt="" className="h-full w-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => removePending(i)}
-                  className="absolute right-0.5 top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white text-xs leading-none hover:bg-black/80"
-                  aria-label="Remove image"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* File picker */}
-        {canAddMore && (
-          <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-gray-200 px-4 py-3 text-sm text-gray-500 hover:border-[#ED1B2F] hover:text-[#ED1B2F] transition-colors">
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              multiple
-              className="sr-only"
-              onChange={handleImageChange}
-              disabled={loading}
-            />
-            <span>+ Add photos</span>
-            <span className="text-xs text-gray-400">JPEG, PNG, or WebP · max 5 MB each</span>
-          </label>
-        )}
-
-        {!canAddMore && (
-          <p className="text-xs text-gray-500">Maximum {MAX_IMAGES} photos reached.</p>
-        )}
-      </div>
-
+      {/* ── Error banner ── */}
       {serverError && (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 border border-red-100">
+        <p className="rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
           {serverError}
         </p>
       )}
 
+      {/* ── Submit / Delete ── */}
       <div className="flex gap-3 pt-2">
         <Button type="submit" size="lg" loading={loading} className="flex-1">
           {mode === 'create' ? 'Post listing' : 'Save changes'}
@@ -435,6 +501,7 @@ export function ListingForm({ mode, sellerId, listing }: ListingFormProps) {
           </Button>
         )}
       </div>
+
     </form>
   )
 }

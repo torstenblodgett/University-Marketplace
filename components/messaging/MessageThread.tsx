@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/Button'
 
 interface Message {
   id: string
@@ -16,11 +15,12 @@ interface Props {
   conversationId: string
   currentUserId: string
   initialMessages: Message[]
+  otherPartyInitial?: string
 }
 
 const MAX_MESSAGE_LENGTH = 2000
 
-export function MessageThread({ conversationId, currentUserId, initialMessages }: Props) {
+export function MessageThread({ conversationId, currentUserId, initialMessages, otherPartyInitial }: Props) {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [content, setContent] = useState('')
   const [sending, setSending] = useState(false)
@@ -94,52 +94,74 @@ export function MessageThread({ conversationId, currentUserId, initialMessages }
     }
   }
 
+  const initial = otherPartyInitial ?? '?'
+
   return (
-    <div className="flex flex-col gap-4">
-      {/* Message list */}
-      <div className="flex flex-col gap-3 min-h-64 max-h-[60vh] overflow-y-auto pr-1">
+    <div className="flex h-full flex-col">
+
+      {/* ── Message list ── */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 min-h-0">
         {messages.length === 0 ? (
-          <div className="flex flex-1 items-center justify-center py-20 text-center">
-            <div>
-              <p className="text-3xl mb-2">👋</p>
-              <p className="text-sm text-gray-500">Start the conversation below.</p>
+          <div className="flex h-full items-center justify-center">
+            <div className="text-center">
+              <p className="text-4xl mb-2">👋</p>
+              <p className="text-sm text-gray-500">Say hello!</p>
             </div>
           </div>
         ) : (
-          messages.map(msg => {
-            const isOwn = msg.sender_id === currentUserId
-            return (
-              <div
-                key={msg.id}
-                className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
-              >
+          <div className="flex flex-col gap-1.5">
+            {messages.map((msg, i) => {
+              const isOwn = msg.sender_id === currentUserId
+              // Show avatar only on the last consecutive received message
+              const nextMsg = messages[i + 1]
+              const showAvatar = !isOwn && (
+                !nextMsg || nextMsg.sender_id === currentUserId
+              )
+
+              return (
                 <div
-                  className={[
-                    'max-w-[75%] rounded-2xl px-4 py-2.5 text-sm',
-                    isOwn
-                      ? 'bg-red-700 text-white rounded-br-sm'
-                      : 'bg-gray-100 text-gray-900 rounded-bl-sm',
-                  ].join(' ')}
+                  key={msg.id}
+                  className={`flex items-end gap-2 ${isOwn ? 'justify-end' : 'justify-start'}`}
                 >
-                  <p className="whitespace-pre-wrap break-words">{msg.content}</p>
-                  <p className={`mt-1 text-xs ${isOwn ? 'text-red-200' : 'text-gray-400'}`}>
-                    {new Date(msg.created_at).toLocaleTimeString('en-CA', {
-                      hour: '2-digit', minute: '2-digit',
-                    })}
-                  </p>
+                  {/* Avatar placeholder for spacing on received messages */}
+                  {!isOwn && (
+                    <div className="w-6 shrink-0 flex items-end">
+                      {showAvatar && (
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-red-400 to-red-700 text-white text-[10px] font-semibold">
+                          {initial}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div
+                    className={[
+                      'max-w-[72%] rounded-3xl px-4 py-2.5 text-sm',
+                      isOwn
+                        ? 'bg-[#ED1B2F] text-white rounded-br-none'
+                        : 'bg-gray-100 text-gray-900 rounded-bl-none',
+                    ].join(' ')}
+                  >
+                    <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.content}</p>
+                  </div>
                 </div>
-              </div>
-            )
-          })
+              )
+            })}
+            <div ref={bottomRef} />
+          </div>
         )}
-        <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
-      <form onSubmit={handleSend} className="border-t border-[#E5E5E5] pt-4 space-y-2">
-        {error && <p className="text-xs text-red-600">{error}</p>}
-        <div className="flex gap-2">
-          <textarea
+      {/* ── Error ── */}
+      {error && (
+        <p className="px-4 pb-1 text-xs text-red-600">{error}</p>
+      )}
+
+      {/* ── Input bar — Instagram style ── */}
+      <div className="border-t border-[#E5E5E5] px-3 py-3">
+        <form onSubmit={handleSend} className="flex items-center gap-2">
+          <input
+            type="text"
             value={content}
             onChange={e => setContent(e.target.value)}
             onKeyDown={e => {
@@ -148,20 +170,25 @@ export function MessageThread({ conversationId, currentUserId, initialMessages }
                 handleSend(e as unknown as React.FormEvent)
               }
             }}
-            placeholder="Type a message... (Enter to send, Shift+Enter for new line)"
-            rows={2}
+            placeholder="Message..."
             maxLength={MAX_MESSAGE_LENGTH}
             disabled={sending}
-            className="flex-1 resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-[#ED1B2F] focus:border-[#ED1B2F] disabled:bg-gray-50 disabled:text-gray-500"
+            className="flex-1 rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#ED1B2F] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#ED1B2F] disabled:opacity-50"
           />
-          <Button type="submit" loading={sending} disabled={!content.trim()}>
-            Send
-          </Button>
-        </div>
-        <p className="text-xs text-right text-gray-400">
-          {content.length}/{MAX_MESSAGE_LENGTH}
-        </p>
-      </form>
+          <button
+            type="submit"
+            disabled={!content.trim() || sending}
+            aria-label="Send"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#ED1B2F] text-white transition-colors hover:bg-[#C41525] disabled:opacity-30"
+          >
+            {/* Paper-plane icon */}
+            <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 -mr-0.5">
+              <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+            </svg>
+          </button>
+        </form>
+      </div>
+
     </div>
   )
 }
