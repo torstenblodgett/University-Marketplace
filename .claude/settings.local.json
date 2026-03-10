@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --version)",
+      "Bash(npm --version)",
+      "Bash(npx --version)",
+      "Bash(export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\")",
+      "Bash(brew --version)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(npx create-next-app@latest mcgill-marketplace --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(npm install @supabase/supabase-js @supabase/ssr zod)",
+      "Bash(node -e \"console.log\\(require\\(''./node_modules/zod/package.json''\\).version\\)\")",
+      "Bash(node -e \"console.log\\(require\\(''./node_modules/@supabase/supabase-js/package.json''\\).version\\)\")",
+      "Bash(node -e \":*)",
+      "Bash(npx tsc --noEmit)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(find \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/profile\" -type f)",
+      "Bash(ls -la \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/profile\")",
+      "Bash(ls -la \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/\")",
+      "Bash(find \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/profile\" -type f -name \"*.tsx\" -o -name \"*.ts\")",
+      "Bash(ls -la \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/profile/me/\")",
+      "Bash(ls -la \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/profile/[userId]/\")",
+      "Bash(find \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)\" -type d -name \"report*\")",
+      "Bash(find \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/listings\" -type f)",
+      "Bash(find \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/messages\" -type f)",
+      "Bash(find \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/search\" -type f)",
+      "Bash(ls -R \"/Users/torstenblodgett/Desktop/Marketplace/app/\\(main\\)/\")"
+    ]
+  }
+}

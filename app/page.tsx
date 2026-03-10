@@ -1,65 +1,168 @@
-import Image from "next/image";
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
+import { Button } from '@/components/ui/Button'
+import { ListingCard } from '@/components/listings/ListingCard'
 
-export default function Home() {
+const CATEGORIES = [
+  { label: 'Textbooks',   slug: 'textbooks',      icon: '📚' },
+  { label: 'Furniture',   slug: 'furniture',      icon: '🛋️' },
+  { label: 'Electronics', slug: 'electronics',    icon: '💻' },
+  { label: 'Clothing',    slug: 'clothing',        icon: '🧥' },
+  { label: 'Winter Gear', slug: 'winter_gear',    icon: '🧤' },
+  { label: 'Tutoring',    slug: 'tutoring',        icon: '🎓' },
+  { label: 'Moving Help', slug: 'moving',          icon: '📦' },
+  { label: 'Cleaning',    slug: 'cleaning',        icon: '🧹' },
+  { label: 'Other Goods', slug: 'other_goods',    icon: '🛍️' },
+  { label: 'Services',    slug: 'other_services',  icon: '🤝' },
+]
+
+export default async function HomePage() {
+  let recentListings = null
+
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('listings')
+      .select('*, profiles(display_name)')
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(8)
+    recentListings = data
+  } catch {
+    // Supabase not configured yet
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="mx-auto max-w-6xl px-4 py-10 space-y-14">
+
+      {/* Hero */}
+      <section className="text-center space-y-5 pt-6">
+        <div className="inline-flex items-center gap-2 rounded-full bg-red-50 px-4 py-1.5 text-sm text-red-700 font-medium border border-red-100">
+          <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+          McGill students only — verified &amp; trusted
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight tracking-tight">
+          The marketplace built<br />
+          <span className="text-red-700">for McGill students</span>
+        </h1>
+
+        <p className="text-lg text-gray-500 max-w-xl mx-auto leading-relaxed">
+          Buy and sell textbooks, furniture, and electronics. Find tutors and student services.
+          Every account is verified with a McGill email.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+          <Link href="/signup">
+            <Button size="lg">Get started free</Button>
+          </Link>
+          <Link href="/search">
+            <Button variant="secondary" size="lg">Browse listings</Button>
+          </Link>
         </div>
-      </main>
+
+        <p className="text-xs text-gray-400">
+          Requires a @mail.mcgill.ca or @mcgill.ca email address
+        </p>
+      </section>
+
+      {/* Trust bar */}
+      <section className="flex flex-wrap justify-center gap-6 text-sm text-gray-500 border-y border-gray-100 py-6">
+        {[
+          'Verified McGill emails only',
+          'In-app messaging — no personal info shared',
+          'Reviews and ratings',
+          'Report and moderation tools',
+        ].map(item => (
+          <div key={item} className="flex items-center gap-2">
+            <span className="text-green-600">✓</span> {item}
+          </div>
+        ))}
+      </section>
+
+      {/* Categories */}
+      <section className="space-y-5">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">Browse by category</h2>
+          <Link href="/search" className="text-sm text-red-700 hover:underline font-medium">See all</Link>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+          {CATEGORIES.map(cat => (
+            <Link
+              key={cat.slug}
+              href={`/search?category=${cat.slug}`}
+              className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white p-4 text-center hover:border-red-200 hover:bg-red-50 transition-colors group"
+            >
+              <span className="text-2xl">{cat.icon}</span>
+              <span className="text-xs font-medium text-gray-700 group-hover:text-red-700 transition-colors">
+                {cat.label}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Recent listings */}
+      <section className="space-y-5">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">Recent listings</h2>
+          <Link href="/search" className="text-sm text-red-700 hover:underline font-medium">View all</Link>
+        </div>
+
+        {!recentListings || recentListings.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 py-20 text-center space-y-3">
+            <p className="text-3xl">🛍️</p>
+            <p className="font-medium text-gray-700">No listings yet</p>
+            <p className="text-sm text-gray-500">Be the first to post something for McGill students.</p>
+            <div className="pt-2">
+              <Link href="/listings/new">
+                <Button size="sm">Post the first listing</Button>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {recentListings.map(listing => (
+              <ListingCard
+                key={listing.id}
+                listing={listing as Parameters<typeof ListingCard>[0]['listing']}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* How it works */}
+      <section className="rounded-2xl bg-gray-50 border border-gray-200 p-8 space-y-6">
+        <h2 className="text-xl font-semibold text-gray-900 text-center">How it works</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            { step: '1', title: 'Verify your McGill email', desc: 'Sign up with your @mail.mcgill.ca or @mcgill.ca address. We send a verification link.' },
+            { step: '2', title: 'Post or browse listings', desc: 'List items, offer services, or search what other McGill students have posted.' },
+            { step: '3', title: 'Connect safely', desc: 'Message through the platform. Reviews and ratings build trust over time.' },
+          ].map(item => (
+            <div key={item.step} className="flex gap-4">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-700 text-white text-sm font-bold">
+                {item.step}
+              </div>
+              <div className="space-y-1">
+                <p className="font-medium text-gray-900">{item.title}</p>
+                <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="text-center space-y-4 pb-10">
+        <h2 className="text-2xl font-semibold text-gray-900">Ready to join?</h2>
+        <p className="text-gray-500">It takes 2 minutes to verify and start posting.</p>
+        <Link href="/signup">
+          <Button size="lg">Create your account</Button>
+        </Link>
+      </section>
+
     </div>
-  );
+  )
 }
